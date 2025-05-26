@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-frqi$h7vp6(#%hj=up!9*3t1zvc6#pdd97k_#_5la4xvtb)wg$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['fitness-z-bartusiem.onrender.com']
 
 
 # Application definition
