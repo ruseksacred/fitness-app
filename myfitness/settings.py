@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'training',
+    'users',
+    
     
 ]
 
@@ -130,3 +132,6 @@ TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+
+LOGIN_REDIRECT_URL = 'home'   # po zalogowaniu przekierowuje do home
+LOGOUT_REDIRECT_URL = 'home'  # po wylogowaniu przekierowuje do home

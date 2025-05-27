@@ -23,4 +23,5 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('dodaj/', views.add_training, name='add_training'),
     path('', include('training.urls')),
+    path('users/', include('users.urls')),
 ]
