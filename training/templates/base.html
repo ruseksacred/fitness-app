@@ -33,7 +33,7 @@
             <a href="#" class="brand-logo">MyFitness</a>
             <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
-                <li><a href="#">Start</a></li>
+                <li><a href="{% url 'home'%}">Start</a></li>
                 <li><a href="#">Treningi</a></li>
                 <li><a href="#">Statystyki</a></li>
                 <li><a href="{% url 'login' %}">Zaloguj</a></li>
@@ -44,7 +44,7 @@
 
     <!-- Sidenav dla urządzeń mobilnych --> 
     <ul class="sidenav" id="mobile-demo">
-        <li><a href="{% url ''%}">Start</a></li>
+        <li><a href="{% url 'home'%}">Start</a></li>
         <li><a href="#">Treningi</a></li>
         <li><a href="#">Statystyki</a></li>
         <li><a href="{% url 'login' %}">Zaloguj</a></li>
