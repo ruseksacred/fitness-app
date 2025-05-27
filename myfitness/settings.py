@@ -24,12 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-frqi$h7vp6(#%hj=up!9*3t1zvc6#pdd97k_#_5la4xvtb)wg$'
+SECRET_KEY = os.getenv("SECRET_KEY", "domyślny-klucz-do-rozwoju")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ['fitness-z-bartusiem.onrender.com']
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "fitness-z-bartusiem.onrender.com"]
 
 
 # Application definition
@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'myfitness.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+    'default': dj_database_url.config(default=os.getenv("DATABASE_URL"), conn_max_age=600)
     }
 
 
