@@ -4,17 +4,28 @@
 <div class="container">
     <div class="card" style="margin-top: 30px;">
         <div class="card-content">
-            <span class="card-title">Trening w toku</span>
+            <span class="card-title">
+                Trening w toku
+                <span id="training-date" style="font-size:1rem; color: #0097a7; margin-left: 15px;"></span>
+            </span>
             <!-- Stoper treningu -->
             <div style="font-size:2rem; margin-bottom: 20px;">
                 <span id="timer">00:00:00</span>
             </div>
 
-            <!-- Formularz ćwiczenia -->
+            <!-- Formularz ćwiczenia/serii -->
             <form id="exercise-form" onsubmit="return false;">
                 <div class="input-field">
-                    <input id="exercise" type="text" required>
-                    <label for="exercise">Nazwa ćwiczenia</label>
+                    <select id="exercise" required>
+                        <option value="" disabled selected>Wybierz ćwiczenie</option>
+                        <option value="pompki">Pompki</option>
+                        <option value="brzuszki">Brzuszki</option>
+                        <option value="przysiady">Przysiady</option>
+                        <option value="biceps">Biceps</option>
+                        <option value="triceps">Triceps</option>
+                        <option value="barki">Barki</option>
+                    </select>
+                    <label for="exercise">Ćwiczenie</label>
                 </div>
                 <div class="input-field">
                     <input id="series" type="number" min="1" value="1" required>
@@ -24,17 +35,10 @@
                     <input id="reps" type="number" min="1" value="1" required>
                     <label for="reps">Powtórzenia</label>
                 </div>
-                <!-- Stoper ćwiczenia -->
-                <div style="margin: 10px 0;">
-                    <span>Stoper ćwiczenia: <span id="exercise-timer">00:00</span></span>
-                    <button type="button" class="btn-small teal" onclick="startExerciseTimer()">Start</button>
-                    <button type="button" class="btn-small red" onclick="stopExerciseTimer()">Stop</button>
-                </div>
-                <input type="hidden" id="exercise-duration">
-                <button type="button" class="btn" onclick="addExercise()">Dodaj ćwiczenie</button>
+                <button type="button" class="btn" onclick="addSeries()">Zakończ serię</button>
             </form>
 
-            <!-- Lista wykonanych ćwiczeń -->
+            <!-- Lista wykonanych serii -->
             <ul class="collection" id="exercise-list" style="margin-top:20px;"></ul>
 
             <!-- Formularz zakończenia treningu -->
@@ -42,6 +46,7 @@
                 {% csrf_token %}
                 <input type="hidden" name="duration" id="duration">
                 <input type="hidden" name="exercises" id="exercises-data">
+                <input type="hidden" name="training_start" id="training-start">
                 <button type="submit" class="btn teal">Zakończ trening</button>
             </form>
         </div>
@@ -50,6 +55,27 @@
 
 <script>
 let startTime = Date.now();
+let trainingDate = new Date(startTime);
+
+// Wyświetl datę i godzinę rozpoczęcia treningu
+function formatDateTime(date) {
+    let d = date;
+    let day = (d.getDate()<10?'0':'') + d.getDate();
+    let month = (d.getMonth()+1<10?'0':'') + (d.getMonth()+1);
+    let year = d.getFullYear();
+    let hours = (d.getHours()<10?'0':'') + d.getHours();
+    let minutes = (d.getMinutes()<10?'0':'') + d.getMinutes();
+    return `${day}.${month}.${year} ${hours}:${minutes}`;
+}
+document.getElementById('training-date').textContent = formatDateTime(trainingDate);
+document.getElementById('training-start').value = trainingDate.toISOString();
+
+// Materialize select init
+document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('select');
+    M.FormSelect.init(elems);
+});
+
 let timerInterval = setInterval(function() {
     let elapsed = Date.now() - startTime;
     let hours = Math.floor(elapsed / 3600000);
@@ -62,50 +88,17 @@ let timerInterval = setInterval(function() {
     document.getElementById('duration').value = Math.floor(elapsed / 1000);
 }, 1000);
 
-// Stoper ćwiczenia
-let exerciseStart = null;
-let exerciseInterval = null;
-let exerciseElapsed = 0;
-
-function startExerciseTimer() {
-    if (exerciseInterval) return;
-    exerciseStart = Date.now() - exerciseElapsed;
-    exerciseInterval = setInterval(function() {
-        exerciseElapsed = Date.now() - exerciseStart;
-        let minutes = Math.floor(exerciseElapsed / 60000);
-        let seconds = Math.floor((exerciseElapsed % 60000) / 1000);
-        document.getElementById('exercise-timer').textContent =
-            (minutes < 10 ? '0' : '') + minutes + ':' +
-            (seconds < 10 ? '0' : '') + seconds;
-    }, 1000);
-}
-
-function stopExerciseTimer() {
-    if (exerciseInterval) {
-        clearInterval(exerciseInterval);
-        exerciseInterval = null;
-    }
-    document.getElementById('exercise-duration').value = Math.floor(exerciseElapsed / 1000);
-}
-
-function resetExerciseTimer() {
-    stopExerciseTimer();
-    exerciseElapsed = 0;
-    document.getElementById('exercise-timer').textContent = "00:00";
-    document.getElementById('exercise-duration').value = "";
-}
-
 let exercises = [];
 
-function addExercise() {
-    stopExerciseTimer();
-    let name = document.getElementById('exercise').value;
+function addSeries() {
+    let exerciseSelect = document.getElementById('exercise');
+    let name = exerciseSelect.options[exerciseSelect.selectedIndex].value;
     let series = document.getElementById('series').value;
     let reps = document.getElementById('reps').value;
-    let duration = document.getElementById('exercise-duration').value;
+    let elapsed = Math.floor((Date.now() - startTime) / 1000);
 
-    if (!name || !series || !reps || !duration) {
-        alert("Uzupełnij wszystkie pola i zatrzymaj stoper ćwiczenia!");
+    if (!name || !series || !reps) {
+        alert("Uzupełnij wszystkie pola!");
         return;
     }
 
@@ -113,19 +106,19 @@ function addExercise() {
         name: name,
         series: series,
         reps: reps,
-        duration: duration
+        time: elapsed
     });
 
     // Dodaj do listy na stronie
     let list = document.getElementById('exercise-list');
     let li = document.createElement('li');
     li.className = "collection-item";
-    li.textContent = `${name} | Seria: ${series} | Powtórzenia: ${reps} | Czas: ${formatDuration(duration)}`;
+    li.textContent = `${name.charAt(0).toUpperCase() + name.slice(1)} | Seria: ${series} | Powtórzenia: ${reps} | Czas treningu: ${formatDuration(elapsed)}`;
     list.appendChild(li);
 
     // Resetuj formularz ćwiczenia
     document.getElementById('exercise-form').reset();
-    resetExerciseTimer();
+    M.FormSelect.init(document.querySelectorAll('select')); // reset selecta
 
     // Aktualizuj ukryte pole do wysłania na backend
     document.getElementById('exercises-data').value = JSON.stringify(exercises);
@@ -135,7 +128,11 @@ function formatDuration(sec) {
     sec = parseInt(sec);
     let minutes = Math.floor(sec / 60);
     let seconds = sec % 60;
-    return (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+    let hours = Math.floor(sec / 3600);
+    minutes = minutes % 60;
+    return (hours < 10 ? '0' : '') + hours + ':' +
+           (minutes < 10 ? '0' : '') + minutes + ':' +
+           (seconds < 10 ? '0' : '') + seconds;
 }
 </script>
 {% endblock %}
