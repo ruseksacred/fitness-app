@@ -28,14 +28,17 @@
                     <label for="exercise">Ćwiczenie</label>
                 </div>
                 <div class="input-field">
-                    <input id="series" type="number" min="1" value="1" required>
+                    <input id="series" type="number" min="1" value="1" required readonly>
                     <label for="series">Seria</label>
                 </div>
-                <div class="input-field">
-                    <input id="reps" type="number" min="1" value="1" required>
-                    <label for="reps">Powtórzenia</label>
+                <div class="input-field" style="display: flex; align-items: center;">
+                    <button type="button" class="btn-small" onclick="changeReps(-1)" style="margin-right:10px;">-</button>
+                    <input id="reps" type="number" min="1" value="1" required style="width:60px; text-align:center;" readonly>
+                    <button type="button" class="btn-small" onclick="changeReps(1)" style="margin-left:10px;">+</button>
+                    <label for="reps" style="margin-left:15px;">Powtórzenia</label>
                 </div>
                 <button type="button" class="btn" onclick="addSeries()">Zakończ serię</button>
+                <button type="button" class="btn grey" onclick="endExercise()" style="margin-left:10px;">Zakończ ćwiczenie</button>
             </form>
 
             <!-- Lista wykonanych serii -->
@@ -74,6 +77,12 @@ document.getElementById('training-start').value = trainingDate.toISOString();
 document.addEventListener('DOMContentLoaded', function() {
     var elems = document.querySelectorAll('select');
     M.FormSelect.init(elems);
+
+    // Po wyborze ćwiczenia ustaw serię na 1
+    document.getElementById('exercise').addEventListener('change', function() {
+        document.getElementById('series').value = 1;
+        document.getElementById('reps').value = 1;
+    });
 });
 
 let timerInterval = setInterval(function() {
@@ -89,22 +98,37 @@ let timerInterval = setInterval(function() {
 }, 1000);
 
 let exercises = [];
+let currentExercise = null;
+
+function changeReps(delta) {
+    let repsInput = document.getElementById('reps');
+    let value = parseInt(repsInput.value) || 1;
+    value += delta;
+    if (value < 1) value = 1;
+    repsInput.value = value;
+}
 
 function addSeries() {
     let exerciseSelect = document.getElementById('exercise');
     let name = exerciseSelect.options[exerciseSelect.selectedIndex].value;
-    let series = document.getElementById('series').value;
+    let seriesInput = document.getElementById('series');
     let reps = document.getElementById('reps').value;
     let elapsed = Math.floor((Date.now() - startTime) / 1000);
 
-    if (!name || !series || !reps) {
-        alert("Uzupełnij wszystkie pola!");
+    if (!name || !reps) {
+        alert("Wybierz ćwiczenie i podaj liczbę powtórzeń!");
         return;
     }
 
-    exercises.push({
-        name: name,
-        series: series,
+    // Jeśli zaczynamy nowe ćwiczenie, zapisz je jako currentExercise
+    if (!currentExercise || currentExercise.name !== name) {
+        currentExercise = { name: name, series: [] };
+        exercises.push(currentExercise);
+    }
+
+    // Dodaj serię do bieżącego ćwiczenia
+    currentExercise.series.push({
+        series: seriesInput.value,
         reps: reps,
         time: elapsed
     });
@@ -113,15 +137,24 @@ function addSeries() {
     let list = document.getElementById('exercise-list');
     let li = document.createElement('li');
     li.className = "collection-item";
-    li.textContent = `${name.charAt(0).toUpperCase() + name.slice(1)} | Seria: ${series} | Powtórzenia: ${reps} | Czas treningu: ${formatDuration(elapsed)}`;
+    li.textContent = `${name.charAt(0).toUpperCase() + name.slice(1)} | Seria: ${seriesInput.value} | Powtórzenia: ${reps} | Czas treningu: ${formatDuration(elapsed)}`;
     list.appendChild(li);
 
-    // Resetuj formularz ćwiczenia
-    document.getElementById('exercise-form').reset();
-    M.FormSelect.init(document.querySelectorAll('select')); // reset selecta
+    // Inkrementuj serię
+    seriesInput.value = parseInt(seriesInput.value) + 1;
+    document.getElementById('reps').value = 1;
 
     // Aktualizuj ukryte pole do wysłania na backend
     document.getElementById('exercises-data').value = JSON.stringify(exercises);
+}
+
+function endExercise() {
+    // Resetuj wybór ćwiczenia i licznik serii
+    document.getElementById('exercise-form').reset();
+    M.FormSelect.init(document.querySelectorAll('select'));
+    document.getElementById('series').value = 1;
+    document.getElementById('reps').value = 1;
+    currentExercise = null;
 }
 
 function formatDuration(sec) {
