@@ -1,4 +1,3 @@
-<!-- filepath: c:\Users\Administrator\Desktop\myfitness\training\templates\add_training.html -->
 {% extends 'base.html' %}
 
 {% block content %}
@@ -6,15 +5,43 @@
     <div class="card" style="margin-top: 30px;">
         <div class="card-content">
             <span class="card-title">Trening w toku</span>
-            <!-- Stoper -->
+            <!-- Stoper treningu -->
             <div style="font-size:2rem; margin-bottom: 20px;">
                 <span id="timer">00:00:00</span>
             </div>
+
+            <!-- Formularz ćwiczenia -->
+            <form id="exercise-form" onsubmit="return false;">
+                <div class="input-field">
+                    <input id="exercise" type="text" required>
+                    <label for="exercise">Nazwa ćwiczenia</label>
+                </div>
+                <div class="input-field">
+                    <input id="series" type="number" min="1" value="1" required>
+                    <label for="series">Seria</label>
+                </div>
+                <div class="input-field">
+                    <input id="reps" type="number" min="1" value="1" required>
+                    <label for="reps">Powtórzenia</label>
+                </div>
+                <!-- Stoper ćwiczenia -->
+                <div style="margin: 10px 0;">
+                    <span>Stoper ćwiczenia: <span id="exercise-timer">00:00</span></span>
+                    <button type="button" class="btn-small teal" onclick="startExerciseTimer()">Start</button>
+                    <button type="button" class="btn-small red" onclick="stopExerciseTimer()">Stop</button>
+                </div>
+                <input type="hidden" id="exercise-duration">
+                <button type="button" class="btn" onclick="addExercise()">Dodaj ćwiczenie</button>
+            </form>
+
+            <!-- Lista wykonanych ćwiczeń -->
+            <ul class="collection" id="exercise-list" style="margin-top:20px;"></ul>
+
             <!-- Formularz zakończenia treningu -->
-            <form method="post">
+            <form method="post" style="margin-top: 30px;">
                 {% csrf_token %}
-                <!-- Możesz dodać inne pola, np. notatki -->
                 <input type="hidden" name="duration" id="duration">
+                <input type="hidden" name="exercises" id="exercises-data">
                 <button type="submit" class="btn teal">Zakończ trening</button>
             </form>
         </div>
@@ -32,8 +59,83 @@ let timerInterval = setInterval(function() {
         (hours < 10 ? '0' : '') + hours + ':' +
         (minutes < 10 ? '0' : '') + minutes + ':' +
         (seconds < 10 ? '0' : '') + seconds;
-    // Ustaw czas trwania w polu hidden (w sekundach)
     document.getElementById('duration').value = Math.floor(elapsed / 1000);
 }, 1000);
+
+// Stoper ćwiczenia
+let exerciseStart = null;
+let exerciseInterval = null;
+let exerciseElapsed = 0;
+
+function startExerciseTimer() {
+    if (exerciseInterval) return;
+    exerciseStart = Date.now() - exerciseElapsed;
+    exerciseInterval = setInterval(function() {
+        exerciseElapsed = Date.now() - exerciseStart;
+        let minutes = Math.floor(exerciseElapsed / 60000);
+        let seconds = Math.floor((exerciseElapsed % 60000) / 1000);
+        document.getElementById('exercise-timer').textContent =
+            (minutes < 10 ? '0' : '') + minutes + ':' +
+            (seconds < 10 ? '0' : '') + seconds;
+    }, 1000);
+}
+
+function stopExerciseTimer() {
+    if (exerciseInterval) {
+        clearInterval(exerciseInterval);
+        exerciseInterval = null;
+    }
+    document.getElementById('exercise-duration').value = Math.floor(exerciseElapsed / 1000);
+}
+
+function resetExerciseTimer() {
+    stopExerciseTimer();
+    exerciseElapsed = 0;
+    document.getElementById('exercise-timer').textContent = "00:00";
+    document.getElementById('exercise-duration').value = "";
+}
+
+let exercises = [];
+
+function addExercise() {
+    stopExerciseTimer();
+    let name = document.getElementById('exercise').value;
+    let series = document.getElementById('series').value;
+    let reps = document.getElementById('reps').value;
+    let duration = document.getElementById('exercise-duration').value;
+
+    if (!name || !series || !reps || !duration) {
+        alert("Uzupełnij wszystkie pola i zatrzymaj stoper ćwiczenia!");
+        return;
+    }
+
+    exercises.push({
+        name: name,
+        series: series,
+        reps: reps,
+        duration: duration
+    });
+
+    // Dodaj do listy na stronie
+    let list = document.getElementById('exercise-list');
+    let li = document.createElement('li');
+    li.className = "collection-item";
+    li.textContent = `${name} | Seria: ${series} | Powtórzenia: ${reps} | Czas: ${formatDuration(duration)}`;
+    list.appendChild(li);
+
+    // Resetuj formularz ćwiczenia
+    document.getElementById('exercise-form').reset();
+    resetExerciseTimer();
+
+    // Aktualizuj ukryte pole do wysłania na backend
+    document.getElementById('exercises-data').value = JSON.stringify(exercises);
+}
+
+function formatDuration(sec) {
+    sec = parseInt(sec);
+    let minutes = Math.floor(sec / 60);
+    let seconds = sec % 60;
+    return (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+}
 </script>
 {% endblock %}
