@@ -1,14 +1,39 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Dodaj trening</title>
-</head>
-<body>
-    <h1>Dodaj trening</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Zapisz</button>
-    </form>
-</body>
-</html>
+<!-- filepath: c:\Users\Administrator\Desktop\myfitness\training\templates\add_training.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="card" style="margin-top: 30px;">
+        <div class="card-content">
+            <span class="card-title">Trening w toku</span>
+            <!-- Stoper -->
+            <div style="font-size:2rem; margin-bottom: 20px;">
+                <span id="timer">00:00:00</span>
+            </div>
+            <!-- Formularz zakończenia treningu -->
+            <form method="post">
+                {% csrf_token %}
+                <!-- Możesz dodać inne pola, np. notatki -->
+                <input type="hidden" name="duration" id="duration">
+                <button type="submit" class="btn teal">Zakończ trening</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+let startTime = Date.now();
+let timerInterval = setInterval(function() {
+    let elapsed = Date.now() - startTime;
+    let hours = Math.floor(elapsed / 3600000);
+    let minutes = Math.floor((elapsed % 3600000) / 60000);
+    let seconds = Math.floor((elapsed % 60000) / 1000);
+    document.getElementById('timer').textContent =
+        (hours < 10 ? '0' : '') + hours + ':' +
+        (minutes < 10 ? '0' : '') + minutes + ':' +
+        (seconds < 10 ? '0' : '') + seconds;
+    // Ustaw czas trwania w polu hidden (w sekundach)
+    document.getElementById('duration').value = Math.floor(elapsed / 1000);
+}, 1000);
+</script>
+{% endblock %}
