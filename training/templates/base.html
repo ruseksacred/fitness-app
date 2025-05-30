@@ -58,6 +58,14 @@
         });
     </script>
 
+    {% if user.is_authenticated %}
+      <div class="container" style="margin-top: 20px;">
+        <div class="card-panel teal lighten-4 teal-text text-darken-4">
+          Witaj, {{ user.username }}! Jesteś zalogowany.
+        </div>
+      </div>
+    {% endif %}
+
   <!-- Właściwa zawartość -->
   {% block content %}{% endblock %}
 
