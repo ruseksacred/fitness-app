@@ -36,8 +36,13 @@
                 <li><a href="{% url 'home'%}">Start</a></li>
                 <li><a href="#">Treningi</a></li>
                 <li><a href="#">Statystyki</a></li>
-                <li><a href="{% url 'login' %}">Zaloguj</a></li>
-                <li><a href="{% url 'register' %}">Rejestracja</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'logout' %}">Wyloguj</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Zaloguj</a></li>
+                    <li><a href="{% url 'register' %}">Rejestracja</a></li>
+                {% endif %}
+                
             </ul>
         </div>
     </nav>
@@ -47,8 +52,12 @@
         <li><a href="{% url 'home'%}">Start</a></li>
         <li><a href="#">Treningi</a></li>
         <li><a href="#">Statystyki</a></li>
-        <li><a href="{% url 'login' %}">Zaloguj</a></li>
-        <li><a href="{% url 'register' %}">Rejestracja</a></li>
+        {% if user.is_authenticated %}
+            <li><a href="{% url 'logout' %}">Wyloguj</a></li>
+        {% else %}
+            <li><a href="{% url 'login' %}">Zaloguj</a></li>
+            <li><a href="{% url 'register' %}">Rejestracja</a></li>
+        {% endif %}
     </ul>
 
     <script>
