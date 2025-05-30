@@ -7,8 +7,7 @@ def register(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)  # automatyczne zalogowanie po rejestracji
-            return redirect('home')  # zmień na nazwę swojej strony startowej
+            return redirect('login')  # Redirect to login page after registration
     else:
         form = UserCreationForm()
     return render(request, 'users/register.html', {'form': form})
