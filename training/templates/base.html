@@ -36,19 +36,16 @@
                 <li><a href="{% url 'home'%}">Start</a></li>
                 <li><a href="#">Treningi</a></li>
                 <li><a href="#">Statystyki</a></li>
-            {% if user.is_authenticated %}
+                {% if user.is_authenticated %}
                     <li>
-                        <form method="post" action="{% url 'logout' %}" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn-flat" style="background:none; border:none; color:white; cursor:pointer;">
-                                Wyloguj
-                            </button>
-                        </form>
+                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                             Wyloguj
+                        </a>
                     </li>
-            {% else %}
+                {% else %}
                     <li><a href="{% url 'login' %}">Zaloguj</a></li>
                     <li><a href="{% url 'register' %}">Rejestracja</a></li>
-            {% endif %}
+                {% endif %}
                 
             </ul>
         </div>
@@ -59,19 +56,16 @@
             <li><a href="{% url 'home'%}">Start</a></li>
             <li><a href="#">Treningi</a></li>
             <li><a href="#">Statystyki</a></li>
-        {% if user.is_authenticated %}
-            <li>
-                <form method="post" action="{% url 'logout' %}" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn-flat" style="background:none; border:none; color:white; cursor:pointer;">
+            {% if user.is_authenticated %}
+                <li>
+                    <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         Wyloguj
-                    </button>
-                </form>
-            </li>
-        {% else %}
-            <li><a href="{% url 'login' %}">Zaloguj</a></li>
-            <li><a href="{% url 'register' %}">Rejestracja</a></li>
-        {% endif %}
+                    </a>
+                </li>
+            {% else %}
+                <li><a href="{% url 'login' %}">Zaloguj</a></li>
+                <li><a href="{% url 'register' %}">Rejestracja</a></li>
+            {% endif %}
     </ul>
 
     <script>
@@ -94,5 +88,9 @@
 
   <!-- JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+  <form id="logout-form" method="post" action="{% url 'logout' %}" style="display:none;">
+    {% csrf_token %}
+</form>
 </body>
 </html>
