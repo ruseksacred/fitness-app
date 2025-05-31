@@ -36,7 +36,7 @@
                 <li><a href="{% url 'home'%}">Start</a></li>
                 <li><a href="#">Treningi</a></li>
                 <li><a href="#">Statystyki</a></li>
-                {% if user.is_authenticated %}
+            {% if user.is_authenticated %}
                     <li>
                         <form method="post" action="{% url 'logout' %}" style="display:inline;">
                             {% csrf_token %}
@@ -45,10 +45,10 @@
                             </button>
                         </form>
                     </li>
-                {% else %}
+            {% else %}
                     <li><a href="{% url 'login' %}">Zaloguj</a></li>
                     <li><a href="{% url 'register' %}">Rejestracja</a></li>
-                {% endif %}
+            {% endif %}
                 
             </ul>
         </div>
@@ -56,9 +56,9 @@
 
     <!-- Sidenav dla urządzeń mobilnych --> 
     <ul class="sidenav" id="mobile-demo">
-        <li><a href="{% url 'home'%}">Start</a></li>
-        <li><a href="#">Treningi</a></li>
-        <li><a href="#">Statystyki</a></li>
+            <li><a href="{% url 'home'%}">Start</a></li>
+            <li><a href="#">Treningi</a></li>
+            <li><a href="#">Statystyki</a></li>
         {% if user.is_authenticated %}
             <li>
                 <form method="post" action="{% url 'logout' %}" style="display:inline;">
