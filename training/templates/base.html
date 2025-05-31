@@ -37,7 +37,14 @@
                 <li><a href="#">Treningi</a></li>
                 <li><a href="#">Statystyki</a></li>
                 {% if user.is_authenticated %}
-                    <li><a href="{% url 'logout' %}">Wyloguj</a></li>
+                    <li>
+                        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-flat" style="background:none; border:none; color:white; cursor:pointer;">
+                                Wyloguj
+                            </button>
+                        </form>
+                    </li>
                 {% else %}
                     <li><a href="{% url 'login' %}">Zaloguj</a></li>
                     <li><a href="{% url 'register' %}">Rejestracja</a></li>
@@ -53,7 +60,14 @@
         <li><a href="#">Treningi</a></li>
         <li><a href="#">Statystyki</a></li>
         {% if user.is_authenticated %}
-            <li><a href="{% url 'logout' %}">Wyloguj</a></li>
+            <li>
+                <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-flat" style="background:none; border:none; color:white; cursor:pointer;">
+                        Wyloguj
+                    </button>
+                </form>
+            </li>
         {% else %}
             <li><a href="{% url 'login' %}">Zaloguj</a></li>
             <li><a href="{% url 'register' %}">Rejestracja</a></li>
