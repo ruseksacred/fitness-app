@@ -45,7 +45,7 @@
             <ul class="collection" id="exercise-list" style="margin-top:20px;"></ul>
 
             <!-- Formularz zakończenia treningu -->
-            <form method="post" style="margin-top: 30px;">
+            <form method="post" style="margin-top: 30px;" onsubmit = return confirm('Czy na pewno chcesz zakończyć trening?');>
                 {% csrf_token %}
                 <input type="hidden" name="duration" id="duration">
                 <input type="hidden" name="exercises" id="exercises-data">
