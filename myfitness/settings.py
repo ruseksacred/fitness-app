@@ -135,3 +135,4 @@ INTERNAL_IPS = [
 
 LOGIN_REDIRECT_URL = 'home'   # po zalogowaniu przekierowuje do home
 LOGOUT_REDIRECT_URL = 'home'  # po wylogowaniu przekierowuje do home
+LOGIN_URL = '/users/login/'
