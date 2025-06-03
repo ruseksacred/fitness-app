@@ -14,8 +14,11 @@ def add_training(request):
     if request.method == "POST":
         form = TrainingSessionForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('add_training')
+            training = form.save(commit=False)
+            training.user = request.user  # Set the user to the current logged-in user
+            training.save()
+            return redirect('training_history')  # Redirect to the training history page after saving
+            
     else:
         form = TrainingSessionForm()
 
