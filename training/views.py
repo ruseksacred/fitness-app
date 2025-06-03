@@ -36,4 +36,9 @@ def show_tables(request):
         tables = cursor.fetchall()
     return HttpResponse("<br>".join([t[0] for t in tables]))
 
+def drop_old_training_table(request):
+    with connection.cursor() as cursor:
+        cursor.execute("DROP TABLE IF EXISTS training_trainingsession CASCADE;")
+    return HttpResponse("Stara tabela usunięta.")
+
 # Create your views here.
