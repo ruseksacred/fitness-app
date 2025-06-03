@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import TrainingSessionForm
 from .models import TrainingSessionNew
+from django.http import HttpResponse
+from django.core.management import call_command
 
 def home(request):
     return render(request, 'training/home.html')
@@ -22,5 +24,9 @@ def add_training(request):
 def training_history(request):
     trainings = TrainingSessionNew.objects.filter(user=request.user).order_by('-date')
     return render(request, 'training/training_history.html', {'trainings': trainings})
+
+def run_migrate(request):
+    call_command('migrate')
+    return HttpResponse("Migracje wykonane!")
 
 # Create your views here.
