@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import TrainingSessionForm
-from .models import TrainingSession
+from .models import TrainingSessionNew
 
 def home(request):
     return render(request, 'training/home.html')
@@ -20,7 +20,7 @@ def add_training(request):
 
 @login_required
 def training_history(request):
-    trainings = TrainingSession.objects.filter(user=request.user).order_by('-date')
+    trainings = TrainingSessionNew.objects.filter(user=request.user).order_by('-date')
     return render(request, 'training/training_history.html', {'trainings': trainings})
 
 # Create your views here.

@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import TrainingSession
+from .models import TrainingSessionNew
 
-admin.site.register(TrainingSession)
+admin.site.register(TrainingSessionNew)
 
 # Register your models here.
