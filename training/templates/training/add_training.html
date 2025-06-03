@@ -47,7 +47,6 @@
             <!-- Formularz zakończenia treningu -->
             <form method="post" style="margin-top: 30px;" onsubmit = "return confirm('Czy na pewno chcesz zakończyć trening?');">
                 {% csrf_token %}
-                {{ form.as_p }}
                 <input type="hidden" name="duration" id="duration">
                 <input type="hidden" name="exercises" id="exercises-data">
                 <input type="hidden" name="training_start" id="training-start">

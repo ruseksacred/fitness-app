@@ -12,19 +12,26 @@ def home(request):
 @login_required
 def add_training(request):
     if request.method == "POST":
-        form = TrainingSessionForm(request.POST)
-        if form.is_valid():
-            training = form.save(commit=False)
-            training.user = request.user  # Set the user to the current logged-in user
-            training.save()
-            return redirect('training_history')  # Redirect to the training history page after saving
-            
-    else:
-        form = TrainingSessionForm()
-
-    return render(request, 'training/add_training.html', {'form': form})
-
-@login_required
+        # Odbierz dane z customowego formularza
+        exercises_json = request.POST.get('exercises')
+        duration = request.POST.get('duration')
+        training_start = request.POST.get('training_start')
+        # Możesz tu sparsować exercises_json i zapisać do bazy (np. tylko podsumowanie)
+        # Przykład: zapis pierwszego ćwiczenia jako osobny rekord
+        import json
+        exercises = json.loads(exercises_json) if exercises_json else []
+        for ex in exercises:
+            TrainingSessionNew.objects.create(
+                user=request.user,
+                date=training_start[:10],  # tylko data
+                exercise=ex['name'],
+                sets=len(ex['series']),
+                repetitions=sum(int(s['reps']) for s in ex['series']),
+                weight=None,
+                notes=f"Serii: {len(ex['series'])}, szczegóły: {ex['series']}"
+            )
+        return redirect('training_history')
+    return render(request, 'training/add_training.html')
 def training_history(request):
     trainings = TrainingSessionNew.objects.filter(user=request.user).order_by('-date')
     return render(request, 'training/training_history.html', {'trainings': trainings})
