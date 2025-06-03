@@ -41,4 +41,9 @@ def drop_old_training_table(request):
         cursor.execute("DROP TABLE IF EXISTS training_trainingsession CASCADE;")
     return HttpResponse("Stara tabela usunięta.")
 
+def reset_training_migrations(request):
+    with connection.cursor() as cursor:
+        cursor.execute("DELETE FROM django_migrations WHERE app='training';")
+    return HttpResponse("Usunięto wpisy migracji training.")
+
 # Create your views here.
