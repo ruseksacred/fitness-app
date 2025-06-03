@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import TrainingSessionForm
 from .models import TrainingSessionNew
 from django.http import HttpResponse
+from django.db import connection
 from django.core.management import call_command
 
 def home(request):
@@ -28,5 +29,11 @@ def training_history(request):
 def run_migrate(request):
     call_command('migrate')
     return HttpResponse("Migracje wykonane!")
+
+def show_tables(request):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT tablename FROM pg_tables WHERE schemaname = 'public';")
+        tables = cursor.fetchall()
+    return HttpResponse("<br>".join([t[0] for t in tables]))
 
 # Create your views here.
