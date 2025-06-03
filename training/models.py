@@ -18,6 +18,7 @@ class TrainingSessionNew(models.Model):
     repetitions = models.PositiveIntegerField()
     weight = models.FloatField(null=True, blank=True, help_text="Waga ciała podczas treningu (kg)")
     notes = models.TextField(blank=True)
+    temp_field = models.CharField(max_length=10, default='tmp', blank=True)  # tymczasowe pole
 
     def __str__(self):
         return f"{self.get_exercise_display()} - {self.date}"
